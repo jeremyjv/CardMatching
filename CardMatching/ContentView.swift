@@ -8,40 +8,89 @@
 import SwiftUI
 
 struct ContentView: View {
+    let emojis: [String] = ["❄️","☃️","🎄","🛷","☃️","🎄","🛷"]
+    @State var CardCount: Int = 4
+    
     var body: some View {
-        HStack {
-            CardView(isFaceUp: true)
-            CardView()
-            CardView()
-            CardView()
+        VStack {
+            cards
+            HStack {
+                CardRemover
+                Spacer()
+                CardAdder
+            }
+            .imageScale(.large)
+            .font(.largeTitle)
         }
-        .foregroundColor(.teal)
         
     }
+    
+    var CardRemover: some View {
+        Button(action: { //pass different parameters into button
+            if CardCount > 1 {
+                CardCount -= 1
+            }
+            
+        }, label: {
+            Image(systemName: "rectangle.stack.badge.minus.fill")
+        
+        })
+    }
+    
+    var CardAdder: some View {
+        Button(action: { //pass different parameters into button
+            if CardCount < emojis.count {
+                CardCount += 1
+            }
+        }, label: {
+            Image(systemName: "rectangle.stack.badge.plus.fill")
+        
+        })
+    }
+    var cards: some View {
+        HStack {
+            ForEach(0..<CardCount, id: \.self) { index in
+                CardView(content: emojis[index])
+            }
+            
+            .foregroundColor(.teal)
+            
+        }
+    }
 }
+    
+
 
 #Preview {
     ContentView()
 }
 
+
+
 struct CardView: View {
-    var isFaceUp: Bool = false
+    
+    //Parameters of CardView Struct
+
+    @State var isFaceUp: Bool = false //state is a pointer
+    let content: String
     
     var body: some View {
         ZStack {
+            let base: RoundedRectangle = RoundedRectangle(cornerRadius: 12)
             if isFaceUp {
-                RoundedRectangle(cornerRadius: 12)
-                
-                    .strokeBorder(lineWidth: 10)
-                    .foregroundColor(.teal)
-                
-                Text("☃️")
+                base.fill(.white)
+                base.strokeBorder(lineWidth: 2)
+                Text(content)
             } else {
-                RoundedRectangle(cornerRadius: 12)
+                base.fill()
                 
             }
         
                         
+        }
+        .onTapGesture {
+            isFaceUp.toggle()
+            
         }
         
         .padding()
